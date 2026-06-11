@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="theme-color" content="#667eea">
+  <meta name="format-detection" content="telephone=no">
+  <title>BMpro - Tambah Properti Sewa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 16px;
+      padding-bottom: 80px;
+    }
+
+    .form-container { 
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      color: white;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .header p {
+      color: rgba(255,255,255,0.9);
+      font-size: 0.75rem;
+    }
+
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      padding: 6px 16px;
+      border-radius: 50px;
+      margin-top: 12px;
+    }
+
+    .user-badge i { color: white; font-size: 0.85rem; }
+    .user-badge span { color: white; font-weight: 500; font-size: 0.8rem; }
+
+    .logout-btn-header {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-card {
+      background: white;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #667eea;
+      display: inline-block;
+    }
+
+    .section-title i {
+      margin-right: 6px;
+      color: #667eea;
+    }
+
+    .form-group { 
+      margin-bottom: 16px; 
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #555;
+      font-size: 0.75rem;
+    }
+
+    .form-group label i {
+      margin-right: 6px;
+      color: #667eea;
+      width: 18px;
+    }
+
+    .form-group label .required {
+      color: #e74c3c;
+      margin-left: 3px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s ease;
+      background: #f8f9fa;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    }
+
+    textarea { 
+      resize: vertical; 
+      min-height: 80px;
+      font-size: 0.85rem;
+    }
+
+    /* SEMUA JADI VERTIKAL - HAPUS GRID */
+    /* .row-2cols dan .row-3cols dihapus, semua form-group display block */
+
+    .image-upload-area {
+      border: 2px dashed #ccc;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #fafafa;
+    }
+
+    .image-upload-area:active {
+      transform: scale(0.98);
+      background: #f0f3ff;
+    }
+
+    .image-upload-area i { 
+      font-size: 1.8rem; 
+      color: #667eea; 
+      margin-bottom: 8px; 
+    }
+    .image-upload-area p { 
+      font-size: 0.75rem; 
+      color: #666; 
+    }
+
+    .image-preview {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .image-preview-item {
+      position: relative;
+      width: 70px;
+      height: 70px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #f0f0f0;
+    }
+
+    .image-preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .upload-status {
+      position: absolute;
+      bottom: 2px;
+      left: 2px;
+      right: 2px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      font-size: 7px;
+      text-align: center;
+      padding: 3px;
+      border-radius: 6px;
+    }
+
+    .upload-status.success { background: #27ae60; }
+    .upload-status.error { background: #e74c3c; }
+    .upload-status.uploading { background: #f39c12; }
+
+    .remove-image-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f8f9fa;
+      padding: 8px 14px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+
+    .checkbox-item input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .checkbox-item span {
+      cursor: pointer;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 20px;
+    }
+    
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error-text {
+      color: #e74c3c;
+      font-size: 0.65rem;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      visibility: hidden;
+    }
+
+    .loading-content {
+      background: white;
+      padding: 25px 35px;
+      border-radius: 24px;
+      text-align: center;
+    }
+
+    .loading-content i { 
+      font-size: 2.5rem; 
+      color: #667eea; 
+      margin-bottom: 12px; 
+    }
+    .loading-content p { 
+      color: #333; 
+      font-weight: 500; 
+      font-size: 0.9rem; 
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255,255,255,0.98);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 16px 20px;
+      box-shadow: 0 -3px 15px rgba(0,0,0,0.1);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      color: #888;
+      font-size: 0.65rem;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      padding: 5px 12px;
+      border-radius: 30px;
+    }
+
+    .nav-item:active { 
+      transform: scale(0.95);
+      background: rgba(102,126,234,0.1);
+    }
+    .nav-item i { font-size: 1.3rem; }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .fa-spinner { animation: spin 1s linear infinite; }
+
+    @media (max-width: 480px) {
+      body { 
+        padding: 12px; 
+        padding-bottom: 75px;
+      }
+      .form-card { 
+        padding: 16px; 
+      }
+      input, select, textarea {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+      }
+      .checkbox-item {
+        padding: 6px 12px;
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <div class="header">
+      <h1><i class="fas fa-key"></i> BMpro Rent</h1>
+      <p>Tambah properti sewa</p>
+      <div class="user-badge">
+        <i class="fas fa-user-circle"></i>
+        <span id="usernameDisplay"></span>
+        <button class="logout-btn-header" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <!-- ==================== DATA PROPERTI ==================== -->
+      <div class="section-title">
+        <i class="fas fa-building"></i> Data Properti Sewa
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-home"></i> Nama Properti <span class="required">*</span></label>
+        <input type="text" id="propertyName" placeholder="Contoh: Pollux Habibie - Tower A" autocomplete="off">
+        <div class="error-text" id="propertyError">Wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-map-marker-alt"></i> Lokasi <span class="required">*</span></label>
+        <input type="text" id="location" placeholder="Contoh: Batam Center" autocomplete="off">
+        <div class="error-text" id="locationError">Wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-address-card"></i> Alamat Lengkap <span class="required">*</span></label>
+        <input type="text" id="address" placeholder="Alamat lengkap properti" autocomplete="off">
+        <div class="error-text" id="addressError">Wajib diisi</div>
+      </div>
+
+      <!-- ==================== HARGA SEWA ==================== -->
+      <div class="section-title">
+        <i class="fas fa-money-bill-wave"></i> Harga Sewa
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-moon"></i> Harga per Malam <span class="required">*</span></label>
+        <input type="text" id="priceNight" placeholder="Rp 150.000" inputmode="numeric">
+        <div class="error-text" id="priceNightError">Wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-calendar-week"></i> Harga per Minggu (Opsional)</label>
+        <input type="text" id="priceWeekly" placeholder="Rp 900.000" inputmode="numeric">
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-calendar-alt"></i> Harga per Bulan (Opsional)</label>
+        <input type="text" id="priceMonthly" placeholder="Rp 3.500.000" inputmode="numeric">
+      </div>
+
+      <!-- ==================== DEPOSIT ==================== -->
+      <div class="section-title">
+        <i class="fas fa-shield-alt"></i> Deposit
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-shield-alt"></i> Deposit (Sewa 1-30 malam) <span class="required">*</span></label>
+        <input type="text" id="depositShort" placeholder="Rp 300.000" inputmode="numeric">
+        <div class="error-text" id="depositShortError">Wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-shield-alt"></i> Deposit (Sewa >30 malam) (Opsional)</label>
+        <input type="text" id="depositLong" placeholder="Rp 1.000.000" inputmode="numeric">
+      </div>
+
+      <!-- ==================== ATURAN SEWA ==================== -->
+      <div class="section-title">
+        <i class="fas fa-clock"></i> Aturan Sewa
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-clock"></i> Minimum Stay (malam) <span class="required">*</span></label>
+        <input type="number" id="minStay" placeholder="1" inputmode="numeric">
+        <div class="error-text" id="minStayError">Wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-users"></i> Maximum Guest (orang) <span class="required">*</span></label>
+        <input type="number" id="maxGuest" placeholder="2" inputmode="numeric">
+        <div class="error-text" id="maxGuestError">Wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-sign-in-alt"></i> Check-in Time</label>
+        <input type="time" id="checkinTime" value="14:00">
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-sign-out-alt"></i> Check-out Time</label>
+        <input type="time" id="checkoutTime" value="12:00">
+      </div>
+
+      <!-- ==================== SPESIFIKASI ==================== -->
+      <div class="section-title">
+        <i class="fas fa-ruler-combined"></i> Spesifikasi Unit
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-bed"></i> Kamar Tidur (KT) <span class="required">*</span></label>
+        <input type="number" id="kt" placeholder="Jumlah kamar tidur" inputmode="numeric">
+        <div class="error-text" id="ktError">Wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-bath"></i> Kamar Mandi (KM) <span class="required">*</span></label>
+        <input type="number" id="km" placeholder="Jumlah kamar mandi" inputmode="numeric">
+        <div class="error-text" id="kmError">Wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-vector-square"></i> Luas Tanah (m²) <span class="required">*</span></label>
+        <input type="number" id="lt" placeholder="Luas tanah/unit" inputmode="numeric">
+        <div class="error-text" id="ltError">Wajib diisi</div>
+      </div>
+
+      <!-- ==================== DESKRIPSI ==================== -->
+      <div class="form-group">
+        <label><i class="fas fa-file-alt"></i> Deskripsi Properti <span class="required">*</span></label>
+        <textarea id="description" rows="3" placeholder="Deskripsi lengkap properti..."></textarea>
+        <div class="error-text" id="descriptionError">Wajib diisi</div>
+      </div>
+
+      <!-- ==================== FASILITAS ==================== -->
+      <div class="form-group">
+        <label><i class="fas fa-concierge-bell"></i> Fasilitas</label>
+        <div class="checkbox-group" id="facilitiesGroup">
+          <label class="checkbox-item"><input type="checkbox" value="WiFi"> <span>WiFi</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="AC"> <span>AC</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Smart TV"> <span>Smart TV</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Kitchen Set"> <span>Kitchen Set</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Water Heater"> <span>Water Heater</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Parkir"> <span>Parkir</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Gym"> <span>Gym</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Kolam Renang"> <span>Kolam Renang</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Balkon"> <span>Balkon</span></label>
+          <label class="checkbox-item"><input type="checkbox" value="Elevator"> <span>Elevator</span></label>
+        </div>
+        <input type="hidden" id="facilities">
+      </div>
+
+      <!-- ==================== PERATURAN & KEBIJAKAN ==================== -->
+      <div class="section-title">
+        <i class="fas fa-gavel"></i> Peraturan & Kebijakan
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-gavel"></i> Peraturan <span class="required">*</span></label>
+        <textarea id="rules" rows="3" placeholder="Peraturan yang berlaku di properti ini..."></textarea>
+        <div class="error-text" id="rulesError">Wajib diisi</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-file-contract"></i> Kebijakan Tambahan (Opsional)</label>
+        <textarea id="policies" rows="2" placeholder="Kebijakan tambahan..."></textarea>
+      </div>
+
+      <!-- ==================== KONTAK ==================== -->
+      <div class="section-title">
+        <i class="fas fa-address-book"></i> Informasi Kontak
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-phone"></i> Nomor Kontak <span class="required">*</span></label>
+        <input type="tel" id="contact" placeholder="081234567890" inputmode="numeric">
+        <div class="error-text" id="contactError">Minimal 10 digit</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fab fa-whatsapp"></i> Nomor WhatsApp (Opsional)</label>
+        <input type="tel" id="whatsapp" placeholder="081234567890" inputmode="numeric">
+      </div>
+
+      <!-- ==================== MEDIA ==================== -->
+      <div class="section-title">
+        <i class="fas fa-video"></i> Media
+      </div>
+
+      <div class="form-group">
+        <label><i class="fab fa-youtube" style="color:#ff0000;"></i> Link YouTube (Opsional)</label>
+        <input type="url" id="youtube" placeholder="https://youtube.com/watch?v=xxxx" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-item" style="background: none; padding-left: 0;">
+          <input type="checkbox" id="featured"> <span><i class="fas fa-star" style="color: #f59e0b;"></i> Jadikan Properti Unggulan (Featured)</span>
+        </label>
+      </div>
+
+      <!-- ==================== GALERI GAMBAR ==================== -->
+      <div class="section-title">
+        <i class="fas fa-images"></i> Galeri Properti
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-star"></i> Gambar Utama <span class="required">*</span></label>
+        <div class="image-upload-area" onclick="document.getElementById('mainImageInput').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Tap untuk pilih gambar</p>
+          <p style="font-size: 0.6rem; color: #999;">Max 10MB | Akan dikompres</p>
+        </div>
+        <input type="file" id="mainImageInput" accept="image/*" style="display: none;" onchange="previewAndCompress(this, 'main')">
+        <div id="preview-main" class="image-preview"></div>
+        <div class="error-text" id="mainImageError">Gambar utama wajib diupload</div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-image"></i> Gambar 2 (Opsional)</label>
+        <div class="image-upload-area" onclick="document.getElementById('image2Input').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Tap untuk pilih gambar</p>
+        </div>
+        <input type="file" id="image2Input" accept="image/*" style="display: none;" onchange="previewAndCompress(this, 'img2')">
+        <div id="preview-img2" class="image-preview"></div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-image"></i> Gambar 3 (Opsional)</label>
+        <div class="image-upload-area" onclick="document.getElementById('image3Input').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Tap untuk pilih gambar</p>
+        </div>
+        <input type="file" id="image3Input" accept="image/*" style="display: none;" onchange="previewAndCompress(this, 'img3')">
+        <div id="preview-img3" class="image-preview"></div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-image"></i> Gambar 4 (Opsional)</label>
+        <div class="image-upload-area" onclick="document.getElementById('image4Input').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Tap untuk pilih gambar</p>
+        </div>
+        <input type="file" id="image4Input" accept="image/*" style="display: none;" onchange="previewAndCompress(this, 'img4')">
+        <div id="preview-img4" class="image-preview"></div>
+      </div>
+
+      <div class="form-group">
+        <label><i class="fas fa-image"></i> Gambar 5 (Opsional)</label>
+        <div class="image-upload-area" onclick="document.getElementById('image5Input').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Tap untuk pilih gambar</p>
+        </div>
+        <input type="file" id="image5Input" accept="image/*" style="display: none;" onchange="previewAndCompress(this, 'img5')">
+        <div id="preview-img5" class="image-preview"></div>
+      </div>
+
+      <!-- Tombol Submit -->
+      <button class="btn-submit" id="submitBtn">
+        <i class="fas fa-save"></i> Simpan Properti
+      </button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <div class="nav-item" onclick="window.location.reload()">
+      <i class="fas fa-plus-circle"></i>
+      <span>Tambah</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='listing_rent.html'">
+      <i class="fas fa-list"></i>
+      <span>Listing</span>
+    </div>
+    <div class="nav-item" onclick="window.location.href='index.html'">
+      <i class="fas fa-home"></i>
+      <span>Beranda</span>
+    </div>
+    <div class="nav-item" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Logout</span>
+    </div>
+  </nav>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <i class="fas fa-spinner fa-pulse"></i>
+      <p>Menyimpan data...</p>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxT6exqeeZr0hNRG1X-NKB5WUbyj5kH-H4kddT4lzQn3O0kK-5RqXqBCeAoylg1Z2lS/exec';
+
+    let uploadedImages = {
+      main: null,
+      img2: null,
+      img3: null,
+      img4: null,
+      img5: null
+    };
+
+    let currentUser = null;
+
+    async function checkAuth() {
+      const userStr = localStorage.getItem('bmpro_user');
+      if (!userStr) {
+        window.location.href = 'login.html';
+        return false;
+      }
+
+      try {
+        currentUser = JSON.parse(userStr);
+        if (!currentUser || !currentUser.username || !currentUser.kontak || !currentUser.role) {
+          localStorage.removeItem('bmpro_user');
+          alert('Session tidak valid, silakan login ulang');
+          window.location.href = 'login.html';
+          return false;
+        }
+
+        if (currentUser.role !== 'admin' && currentUser.role !== 'host' && currentUser.role !== 'sales') {
+          localStorage.removeItem('bmpro_user');
+          alert('Akses ditolak');
+          window.location.href = 'login.html';
+          return false;
+        }
+
+        const usernameDisplay = document.getElementById('usernameDisplay');
+        if (usernameDisplay) {
+          usernameDisplay.innerText = currentUser.username;
+        }
+        return true;
+      } catch (err) {
+        console.error(err);
+        localStorage.removeItem('bmpro_user');
+        alert('Session rusak, silakan login ulang');
+        window.location.href = 'login.html';
+        return false;
+      }
+    }
+
+    function logout() { 
+      localStorage.removeItem('bmpro_user'); 
+      window.location.href = 'login.html'; 
+    }
+
+    function formatRupiahToNumber(value) {
+      if (!value) return '';
+      return value.toString().replace(/[^0-9]/g, '');
+    }
+
+    function compressImage(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            const maxSize = 800;
+
+            if (width > maxSize || height > maxSize) {
+              if (width > height) {
+                height = (height * maxSize) / width;
+                width = maxSize;
+              } else {
+                width = (width * maxSize) / height;
+                height = maxSize;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            let quality = 0.6;
+            let dataUrl = canvas.toDataURL('image/jpeg', quality);
+            let dataUrlSize = Math.round((dataUrl.length * 0.75) / 1024);
+
+            while (dataUrlSize > 300 && quality > 0.3) {
+              quality -= 0.1;
+              dataUrl = canvas.toDataURL('image/jpeg', quality);
+              dataUrlSize = Math.round((dataUrl.length * 0.75) / 1024);
+            }
+
+            resolve(dataUrl);
+          };
+          img.onerror = reject;
+        };
+        reader.onerror = reject;
+      });
+    }
+
+    async function previewAndCompress(input, imageKey) {
+      const file = input.files[0];
+      if (!file) return;
+
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran gambar terlalu besar (maksimal 10MB).');
+        input.value = '';
+        return;
+      }
+
+      const previewDiv = document.getElementById(`preview-${imageKey}`);
+      if (!previewDiv) return;
+
+      previewDiv.innerHTML = `
+        <div class="image-preview-item">
+          <div style="width: 70px; height: 70px; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-spinner fa-pulse" style="font-size: 18px; color: #667eea;"></i>
+          </div>
+          <div class="upload-status uploading">Memproses...</div>
+          <button class="remove-image-btn" onclick="removeImage('${imageKey}')">&times;</button>
+        </div>
+      `;
+
+      try {
+        const compressedBase64 = await compressImage(file);
+        previewDiv.innerHTML = `
+          <div class="image-preview-item">
+            <img src="${compressedBase64}" alt="Preview">
+            <div class="upload-status success">✓ ${Math.round((compressedBase64.length * 0.75) / 1024)} KB</div>
+            <button class="remove-image-btn" onclick="removeImage('${imageKey}')">&times;</button>
+          </div>
+        `;
+        uploadedImages[imageKey] = compressedBase64;
+        if (imageKey === 'main') {
+          document.getElementById('mainImageError').style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Compress error:', error);
+        previewDiv.innerHTML = `<div class="image-preview-item"><div class="upload-status error">Gagal</div><button class="remove-image-btn" onclick="removeImage('${imageKey}')">&times;</button></div>`;
+        input.value = '';
+        uploadedImages[imageKey] = null;
+      }
+    }
+
+    async function removeImage(imageKey) {
+      uploadedImages[imageKey] = null;
+      const inputMap = { 'main': 'mainImageInput', 'img2': 'image2Input', 'img3': 'image3Input', 'img4': 'image4Input', 'img5': 'image5Input' };
+      const input = document.getElementById(inputMap[imageKey]);
+      if (input) input.value = '';
+      const previewDiv = document.getElementById(`preview-${imageKey}`);
+      if (previewDiv) previewDiv.innerHTML = '';
+      if (imageKey === 'main') {
+        document.getElementById('mainImageError').style.display = 'block';
+      }
+    }
+
+    function getSelectedFacilities() {
+      const checkboxes = document.querySelectorAll('#facilitiesGroup input[type="checkbox"]:checked');
+      const values = Array.from(checkboxes).map(cb => cb.value);
+      return values.join(', ');
+    }
+
+    function validateForm() {
+      let isValid = true;
+
+      const requiredFields = ['propertyName', 'location', 'address', 'priceNight', 'depositShort', 'minStay', 'maxGuest', 'kt', 'km', 'lt', 'description', 'rules', 'contact'];
+      
+      requiredFields.forEach(field => {
+        const input = document.getElementById(field);
+        const errorEl = document.getElementById(`${field}Error`);
+        if (!input || !errorEl) return;
+        
+        const value = input.value.trim();
+        if (!value) {
+          errorEl.style.display = 'block';
+          isValid = false;
+        } else if (field === 'contact') {
+          if (value.replace(/\D/g, '').length < 10) {
+            errorEl.style.display = 'block';
+            isValid = false;
+          } else {
+            errorEl.style.display = 'none';
+          }
+        } else if (field === 'priceNight' || field === 'depositShort') {
+          const numValue = formatRupiahToNumber(value);
+          if (!numValue || parseInt(numValue) <= 0) {
+            errorEl.style.display = 'block';
+            isValid = false;
+          } else {
+            errorEl.style.display = 'none';
+          }
+        } else {
+          errorEl.style.display = 'none';
+        }
+      });
+
+      if (!uploadedImages.main) {
+        document.getElementById('mainImageError').style.display = 'block';
+        isValid = false;
+      } else {
+        document.getElementById('mainImageError').style.display = 'none';
+      }
+
+      return isValid;
+    }
+
+    function formatPhoneNumberForSheet(phone) {
+      let cleaned = phone.replace(/\D/g, '');
+      if (cleaned.startsWith('0')) {
+        cleaned = '62' + cleaned.substring(1);
+      } else if (!cleaned.startsWith('62')) {
+        cleaned = '62' + cleaned;
+      }
+      return cleaned;
+    }
+
+    async function submitPropertyData() {
+      if (!validateForm()) return;
+
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      const submitBtn = document.getElementById('submitBtn');
+
+      loadingOverlay.style.visibility = 'visible';
+      submitBtn.disabled = true;
+
+      try {
+        const facilities = getSelectedFacilities();
+        
+        const payload = {
+          action: 'saveRentProperty',
+          category: 'rent_property',
+          timestamp: new Date().toISOString(),
+          sales: currentUser.username,
+          nama_property: document.getElementById('propertyName').value.trim(),
+          lokasi: document.getElementById('location').value.trim(),
+          alamat: document.getElementById('address').value.trim(),
+          harga_malam: formatRupiahToNumber(document.getElementById('priceNight').value),
+          harga_mingguan: formatRupiahToNumber(document.getElementById('priceWeekly').value) || '',
+          harga_bulanan: formatRupiahToNumber(document.getElementById('priceMonthly').value) || '',
+          deposit_short: formatRupiahToNumber(document.getElementById('depositShort').value),
+          deposit_long: formatRupiahToNumber(document.getElementById('depositLong').value) || '',
+          minimum_stay: document.getElementById('minStay').value,
+          maximum_guest: document.getElementById('maxGuest').value,
+          checkin_time: document.getElementById('checkinTime').value,
+          checkout_time: document.getElementById('checkoutTime').value,
+          kt: document.getElementById('kt').value,
+          km: document.getElementById('km').value,
+          lt: document.getElementById('lt').value,
+          deskripsi: document.getElementById('description').value.trim(),
+          fasilitas: facilities,
+          peraturan: document.getElementById('rules').value.trim(),
+          kebijakan: document.getElementById('policies').value.trim(),
+          kontak: formatPhoneNumberForSheet(document.getElementById('contact').value),
+          whatsapp: document.getElementById('whatsapp').value.trim() || document.getElementById('contact').value.trim(),
+          youtube: document.getElementById('youtube').value.trim(),
+          featured: document.getElementById('featured').checked ? 'yes' : 'no',
+          gambar_utama: uploadedImages.main || '',
+          gambar2: uploadedImages.img2 || '',
+          gambar3: uploadedImages.img3 || '',
+          gambar4: uploadedImages.img4 || '',
+          gambar5: uploadedImages.img5 || ''
+        };
+
+        const formData = new URLSearchParams();
+        Object.keys(payload).forEach(key => {
+          formData.append(key, payload[key]);
+        });
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert('✅ Data properti sewa berhasil disimpan!');
+          resetForm();
+        } else {
+          throw new Error(result.message || 'Gagal menyimpan data');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('❌ ERROR: ' + error.message);
+      } finally {
+        loadingOverlay.style.visibility = 'hidden';
+        submitBtn.disabled = false;
+      }
+    }
+
+    function resetForm() {
+      const fields = ['propertyName', 'location', 'address', 'priceNight', 'priceWeekly', 'priceMonthly', 
+                      'depositShort', 'depositLong', 'minStay', 'maxGuest', 'kt', 'km', 'lt', 
+                      'description', 'rules', 'policies', 'contact', 'whatsapp', 'youtube'];
+      fields.forEach(field => {
+        const input = document.getElementById(field);
+        if (input) input.value = '';
+      });
+      
+      document.getElementById('checkinTime').value = '14:00';
+      document.getElementById('checkoutTime').value = '12:00';
+      document.getElementById('featured').checked = false;
+      
+      const checkboxes = document.querySelectorAll('#facilitiesGroup input[type="checkbox"]');
+      checkboxes.forEach(cb => cb.checked = false);
+      
+      const images = ['main', 'img2', 'img3', 'img4', 'img5'];
+      images.forEach(img => {
+        const inputMap = { 'main': 'mainImageInput', 'img2': 'image2Input', 'img3': 'image3Input', 'img4': 'image4Input', 'img5': 'image5Input' };
+        const input = document.getElementById(inputMap[img]);
+        if (input) input.value = '';
+        const preview = document.getElementById(`preview-${img}`);
+        if (preview) preview.innerHTML = '';
+        uploadedImages[img] = null;
+      });
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) submitBtn.onclick = submitPropertyData;
+
+    checkAuth();
+  </script>
+</body>
+</html>
