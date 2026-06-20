@@ -683,7 +683,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-dgX8c9FkG4iHzRPPIYG_VHIlG9WtLZVAmsk4zzD3Sj29WcdBRnwV8EwQdVWAcgwVpA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzshhhkNluHllDl8_LnYksXcEoBEYgq3rfueN0naDT4pILOQBwf7Urwsg7ghA8lztAew/exec';
     const FORM = document.getElementById('propertyForm');
     const SUBMIT_BTN = document.getElementById('submitBtn');
     const RESET_BTN = document.getElementById('resetBtn');
@@ -909,14 +909,12 @@
   try {
     const payload = buildPayload();
 
-    const formData = new URLSearchParams();
-    Object.keys(payload).forEach(key => {
-      formData.append(key, payload[key]);
-    });
-
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
-      body: formData
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     });
 
     const result = await response.json();
