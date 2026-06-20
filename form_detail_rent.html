@@ -683,7 +683,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGX3xoWHuki_wRc2p1NFZhcZ7mdXAPB4hu-Ww8PyX460wHIiXTaYExo-Xw_sIk16-JXg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-dgX8c9FkG4iHzRPPIYG_VHIlG9WtLZVAmsk4zzD3Sj29WcdBRnwV8EwQdVWAcgwVpA/exec';
     const FORM = document.getElementById('propertyForm');
     const SUBMIT_BTN = document.getElementById('submitBtn');
     const RESET_BTN = document.getElementById('resetBtn');
@@ -900,45 +900,42 @@
     }
 
     async function submitProperty(event) {
-      event.preventDefault();
-      if (!validateForm()) return;
+  event.preventDefault();
+  if (!validateForm()) return;
 
-      SUBMIT_BTN.disabled = true;
-      SUBMIT_BTN.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+  SUBMIT_BTN.disabled = true;
+  SUBMIT_BTN.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
-      try {
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(buildPayload())
-        });
-        const result = await response.json();
+  try {
+    const payload = buildPayload();
 
-        if (!result.success) {
-          throw new Error(result.message || 'Gagal menyimpan data.');
-        }
+    const formData = new URLSearchParams();
+    Object.keys(payload).forEach(key => {
+      formData.append(key, payload[key]);
+    });
 
-        showToast(`Properti tersimpan: ${result.property_id || 'berhasil'}`, 'success');
-        FORM.reset();
-        Object.keys(imageData).forEach(key => imageData[key] = '');
-        document.querySelectorAll('.image-picker').forEach(label => {
-          const img = label.querySelector('img');
-          const tag = label.querySelector('.image-tag');
-          if (img) img.remove();
-          if (tag) tag.remove();
-          label.querySelector('.image-empty').style.display = 'grid';
-        });
-        hydrateHostFromStorage();
-      } catch (error) {
-        console.error(error);
-        showToast(error.message, 'error');
-      } finally {
-        SUBMIT_BTN.disabled = false;
-        SUBMIT_BTN.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Simpan ke Sheet';
-      }
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (!result || !result.success) {
+      throw new Error(result?.message || 'Gagal menyimpan data');
     }
+
+    showToast(`Properti tersimpan: ${result.property_id}`, 'success');
+    resetForm();
+
+  } catch (error) {
+    console.error(error);
+    showToast(error.message, 'error');
+  } finally {
+    SUBMIT_BTN.disabled = false;
+    SUBMIT_BTN.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Simpan ke Sheet';
+  }
+}
 
     function resetForm() {
       FORM.reset();
