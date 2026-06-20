@@ -837,6 +837,7 @@
     }
 
     function validateForm() {
+      console.log('gambar_utama:', imageData.gambar_utama);
       let valid = true;
 
       FORM.querySelectorAll('[required]').forEach(field => {
@@ -949,6 +950,7 @@
           : field.value.trim();
 
       if (!value) {
+        console.log('Field gagal validasi:', field.name, field.dataset.imageKey);
         console.log('Field kosong:', field.name || field.dataset.imageKey);
         valid = false;
       }
