@@ -683,7 +683,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzshhhkNluHllDl8_LnYksXcEoBEYgq3rfueN0naDT4pILOQBwf7Urwsg7ghA8lztAew/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOOCMjyLHi1QESrKRGvSpRKnLafsBNopAyATdDRtXzCy3vIwRodFohP13GNQQn6cqaFg/exec';
     const FORM = document.getElementById('propertyForm');
     const SUBMIT_BTN = document.getElementById('submitBtn');
     const RESET_BTN = document.getElementById('resetBtn');
@@ -909,13 +909,16 @@
   try {
     const payload = buildPayload();
 
-    const response = await fetch(SCRIPT_URL, {
+    await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+      body: formData
     });
+
+    // jangan tunggu response JSON
+    setTimeout(() => {
+      showToast("Data berhasil dikirim ke server", "success");
+      resetForm();
+    }, 2000);
 
     const result = await response.json();
 
