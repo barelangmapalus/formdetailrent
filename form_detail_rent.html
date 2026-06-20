@@ -683,7 +683,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJaJ0U-vnAa8buuArARfqcSzBA2o53ECMb2NonsoZEqTiduhMKKOBgPxrBvDDhQYGIWw/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkFothd6ZzQBpJ1aLvRyxLSSfGXa412MKLBK9pgeEn0Hap-453hqytAPeXdTbv8YOS9w/exec';
     const FORM = document.getElementById('propertyForm');
     const SUBMIT_BTN = document.getElementById('submitBtn');
     const RESET_BTN = document.getElementById('resetBtn');
@@ -837,21 +837,29 @@
     }
 
     function validateForm() {
-      console.log('gambar_utama:', imageData.gambar_utama);
       let valid = true;
 
-      FORM.querySelectorAll('[required]').forEach(field => {
-        const value = field.type === 'file' ? imageData[field.dataset.imageKey] : field.value.trim();
-        const invalidPhone = ['sales_phone', 'kontak'].includes(field.name) && onlyDigits(value).length < 10;
-        const invalidMoney = field.name === 'harga_malam' && Number(onlyDigits(value)) <= 0;
-        const isInvalid = !value || invalidPhone || invalidMoney;
-
-        if (field.type !== 'file') setFieldError(field, isInvalid);
-        if (isInvalid) valid = false;
+      // Validasi field teks
+      FORM.querySelectorAll('input:not([type="file"]), select, textarea').forEach(field => {
+        if (field.hasAttribute('required')) {
+          const value = field.value.trim();
+          const invalidPhone = ['sales_phone', 'kontak'].includes(field.name) && onlyDigits(value).length < 10;
+          const invalidMoney = field.name === 'harga_malam' && Number(onlyDigits(value)) <= 0;
+          const isInvalid = !value || invalidPhone || invalidMoney;
+          
+          setFieldError(field, isInvalid);
+          if (isInvalid) valid = false;
+        }
       });
 
-      document.getElementById('gambar_utama_error').style.display = imageData.gambar_utama ? 'none' : 'block';
-      if (!imageData.gambar_utama) valid = false;
+      // Validasi gambar utama
+      const gambarUtamaError = document.getElementById('gambar_utama_error');
+      if (!imageData.gambar_utama) {
+        gambarUtamaError.style.display = 'block';
+        valid = false;
+      } else {
+        gambarUtamaError.style.display = 'none';
+      }
 
       if (!valid) showToast('Lengkapi field wajib terlebih dahulu.', 'error');
       return valid;
@@ -859,6 +867,8 @@
 
     function buildPayload() {
       const formData = new FormData(FORM);
+      
+      // Tambahkan imageData ke payload
       const payload = {
         action: 'saveRentProperty',
         sales: formData.get('sales').trim(),
@@ -901,68 +911,69 @@
     }
 
     async function submitProperty(event) {
-        event.preventDefault();
+      event.preventDefault();
 
-        if (!validateForm()) return;
+      if (!validateForm()) return;
 
-        SUBMIT_BTN.disabled = true;
-        SUBMIT_BTN.innerHTML =
-          '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+      SUBMIT_BTN.disabled = true;
+      SUBMIT_BTN.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
-        try {
-          const payload = buildPayload();
+      try {
+        const payload = buildPayload();
+        
+        // Kirim sebagai FormData untuk menangani file
+        const formData = new FormData();
+        Object.keys(payload).forEach(key => {
+          formData.append(key, payload[key]);
+        });
 
-          const formData = new URLSearchParams();
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: formData
+        });
 
-          Object.keys(payload).forEach(key => {
-            formData.append(key, payload[key]);
-          });
-
-          await fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: formData
-          });
-
-          setTimeout(() => {
-            showToast('Data berhasil dikirim ke server', 'success');
-            resetForm();
-          }, 2000);
-
-        } catch (error) {
-          console.error(error);
-          showToast('Gagal mengirim data', 'error');
-        } finally {
-          SUBMIT_BTN.disabled = false;
-          SUBMIT_BTN.innerHTML =
-            '<i class="fas fa-cloud-upload-alt"></i> Simpan ke Sheet';
+        const result = await response.json();
+        
+        if (result.success) {
+          showToast('Data berhasil disimpan! ID: ' + result.property_id, 'success');
+          setTimeout(resetForm, 1500);
+        } else {
+          showToast('Gagal: ' + result.message, 'error');
         }
+
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Gagal mengirim data: ' + error.message, 'error');
+      } finally {
+        SUBMIT_BTN.disabled = false;
+        SUBMIT_BTN.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Simpan ke Sheet';
       }
+    }
 
     function resetForm() {
       FORM.reset();
       Object.keys(imageData).forEach(key => imageData[key] = '');
-      FORM.querySelectorAll('[required]').forEach(field => {
-
-      const value =
-        field.type === 'file'
-          ? imageData[field.dataset.imageKey]
-          : field.value.trim();
-
-      if (!value) {
-        console.log('Field gagal validasi:', field.name, field.dataset.imageKey);
-        console.log('Field kosong:', field.name || field.dataset.imageKey);
-        valid = false;
-      }
-      });
+      
+      // Reset preview gambar
+      document.querySelectorAll('.image-picker img').forEach(img => img.remove());
+      document.querySelectorAll('.image-tag').forEach(tag => tag.remove());
+      document.querySelectorAll('.image-empty').forEach(el => el.style.display = 'grid');
+      
+      // Reset error
+      document.querySelectorAll('.error-text').forEach(el => el.style.display = 'none');
+      
       hydrateHostFromStorage();
+      showToast('Form telah direset', '');
     }
 
+    // Event Listeners
     moneyFields.forEach(id => {
       const input = document.getElementById(id);
-      input.addEventListener('input', () => {
-        input.value = onlyDigits(input.value);
-      });
+      if (input) {
+        input.addEventListener('input', () => {
+          input.value = onlyDigits(input.value);
+        });
+      }
     });
 
     document.querySelectorAll('input[type="file"][data-image-key]').forEach(input => {
@@ -971,6 +982,8 @@
 
     FORM.addEventListener('submit', submitProperty);
     RESET_BTN.addEventListener('click', resetForm);
+    
+    // Inisialisasi
     hydrateHostFromStorage();
   </script>
 </body>
