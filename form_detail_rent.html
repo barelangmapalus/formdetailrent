@@ -683,7 +683,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxiTusMaXrBxbXDr4FEG5J7fGTBVV6UFzJyR_ho6hh_up81n8g2Bxonl8K0mY7MZLj/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbws54AyoLuvFNDMOGPj68jIV_8rk-4MTx5yRAnrC6RZLE87dm2-TUnf8Irg2Fsfi0yDzg/exec';
     const FORM = document.getElementById('propertyForm');
     const SUBMIT_BTN = document.getElementById('submitBtn');
     const RESET_BTN = document.getElementById('resetBtn');
@@ -1095,6 +1095,7 @@
         });
 
         const result = await response.json();
+        console.log(result);
         
         if (result.success) {
           showToast('Data berhasil disimpan! ID: ' + result.property_id, 'success');
