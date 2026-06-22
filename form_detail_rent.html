@@ -683,19 +683,19 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcMu5AtqhU3h5-oYbwPYjA6tClO9VjoRZfjTdPSbPOyH9--KCEqvKc-XJo9QDo1TQqAA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbBeNvIukhN7vIY7XzkmM9bJqll-PbZ1q-kTsRHrRGDBeqyxN4uNYi_z3gxD7MTNNcGg/exec';
     const FORM = document.getElementById('propertyForm');
     const SUBMIT_BTN = document.getElementById('submitBtn');
     const RESET_BTN = document.getElementById('resetBtn');
     const TOAST = document.getElementById('toast');
     
     // Simpan gambar base64 untuk dikirim ke GAS
-    const uploadedImages = {
-      gambar_utama: null,
-      gambar2: null,
-      gambar3: null,
-      gambar4: null,
-      gambar5: null
+    let uploadedImages = {
+      main: null,
+      img2: null,
+      img3: null,
+      img4: null,
+      img5: null
     };
 
     const moneyFields = [
@@ -914,8 +914,19 @@
       const file =
         input.files[0];
 
-      const key =
-        input.dataset.imageKey;
+        const key =
+          input.dataset.imageKey;
+
+        const mapKey = {
+          gambar_utama: 'main',
+          gambar2: 'img2',
+          gambar3: 'img3',
+          gambar4: 'img4',
+          gambar5: 'img5'
+        };
+
+const imageKey =
+  mapKey[key];
 
       if (!file || !key) return;
 
@@ -948,7 +959,7 @@
             300
           );
 
-        uploadedImages[key] =
+          uploadedImages[imageKey] =
           compressedBase64;
 
         renderImagePreview(
@@ -1012,12 +1023,12 @@
 
       // Validasi gambar utama
       const gambarUtamaError = document.getElementById('gambar_utama_error');
-      if (!uploadedImages.gambar_utama) {
-        gambarUtamaError.style.display = 'block';
-        valid = false;
-      } else {
-        gambarUtamaError.style.display = 'none';
-      }
+      if (!uploadedImages.main) {
+            gambarUtamaError.style.display = 'block';
+            valid = false;
+          } else {
+            gambarUtamaError.style.display = 'none';
+          }
 
       if (!valid) showToast('Lengkapi field wajib terlebih dahulu.', 'error');
       return valid;
@@ -1065,51 +1076,38 @@
 
         formData.append(
           'gambar_utama',
-          uploadedImages.gambar_utama || ''
+          uploadedImages.main || ''
         );
 
         formData.append(
           'gambar2',
-          uploadedImages.gambar2 || ''
+          uploadedImages.img2 || ''
         );
 
         formData.append(
           'gambar3',
-          uploadedImages.gambar3 || ''
+          uploadedImages.img3 || ''
         );
 
         formData.append(
           'gambar4',
-          uploadedImages.gambar4 || ''
+          uploadedImages.img4 || ''
         );
 
         formData.append(
           'gambar5',
-          uploadedImages.gambar5 || ''
-        );
-
-
-
-
-
-
-
-
-
-        console.log(
-          'gambar_utama HTML =',
-          uploadedImages.gambar_utama
+          uploadedImages.img5 || ''
         );
 
         console.log(
-          'length =',
-          uploadedImages.gambar_utama
-            ? uploadedImages.gambar_utama.length
-            : 0
+          'gambar_utama length =',
+          (uploadedImages.main || '').length
         );
 
-
-
+        console.log(
+          'gambar2 length =',
+          (uploadedImages.img2 || '').length
+        );
 
 
         // Kirim data
