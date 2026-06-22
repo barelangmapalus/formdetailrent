@@ -689,8 +689,8 @@
     const RESET_BTN = document.getElementById('resetBtn');
     const TOAST = document.getElementById('toast');
     
-    // Simpan file untuk dikirim
-    const imageFiles = {
+    // Simpan gambar base64 untuk dikirim ke GAS
+    const uploadedImages = {
       gambar_utama: null,
       gambar2: null,
       gambar3: null,
@@ -770,32 +770,222 @@
       }
       tag.textContent = name;
     }
+    
 
-    function handleImageChange(event) {
-      const input = event.target;
-      const file = input.files[0];
-      const key = input.dataset.imageKey;
+    async function compressImage(
+      file,
+      maxSizeKB = 300
+    ) {
+
+      return new Promise((resolve) => {
+
+        const reader =
+          new FileReader();
+
+        reader.onload = (event) => {
+
+          const img =
+            new Image();
+
+          img.onload = () => {
+
+            const canvas =
+              document.createElement(
+                'canvas'
+              );
+
+            let width =
+              img.width;
+
+            let height =
+              img.height;
+
+            const maxDimension =
+              1600;
+
+            if (
+              width > maxDimension ||
+              height > maxDimension
+            ) {
+
+              if (width > height) {
+
+                height =
+                  Math.round(
+                    height *
+                    maxDimension /
+                    width
+                  );
+
+                width =
+                  maxDimension;
+
+              } else {
+
+                width =
+                  Math.round(
+                    width *
+                    maxDimension /
+                    height
+                  );
+
+                height =
+                  maxDimension;
+
+              }
+
+            }
+
+            canvas.width =
+              width;
+
+            canvas.height =
+              height;
+
+            const ctx =
+              canvas.getContext('2d');
+
+            ctx.drawImage(
+              img,
+              0,
+              0,
+              width,
+              height
+            );
+
+            let quality = 0.9;
+
+            const tryCompress = () => {
+
+              const dataUrl =
+                canvas.toDataURL(
+                  'image/jpeg',
+                  quality
+                );
+
+              const sizeKB =
+                Math.round(
+                  dataUrl.length *
+                  0.75 /
+                  1024
+                );
+
+              if (
+                sizeKB <= maxSizeKB ||
+                quality <= 0.3
+              ) {
+
+                resolve(dataUrl);
+
+                return;
+
+              }
+
+              quality -= 0.05;
+
+              tryCompress();
+
+            };
+
+            tryCompress();
+
+          };
+
+          img.src =
+            event.target.result;
+
+        };
+
+        reader.readAsDataURL(
+          file
+        );
+
+      });
+
+    }
+
+    async function handleImageChange(
+      event
+    ) {
+
+      const input =
+        event.target;
+
+      const file =
+        input.files[0];
+
+      const key =
+        input.dataset.imageKey;
+
       if (!file || !key) return;
 
-      if (file.size > 10 * 1024 * 1024) {
+      if (
+        file.size >
+        10 * 1024 * 1024
+      ) {
+
         input.value = '';
-        showToast('Ukuran gambar maksimal 10MB.', 'error');
+
+        showToast(
+          'Ukuran gambar maksimal 10MB.',
+          'error'
+        );
+
         return;
+
       }
 
-      // Simpan file
-      imageFiles[key] = file;
-      
-      // Tampilkan preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        renderImagePreview(input, e.target.result);
-        if (key === 'gambar_utama') {
-          document.getElementById('gambar_utama_error').style.display = 'none';
+      try {
+
+        showToast(
+          'Mengompres gambar...',
+          ''
+        );
+
+        const compressedBase64 =
+          await compressImage(
+            file,
+            300
+          );
+
+        uploadedImages[key] =
+          compressedBase64;
+
+        renderImagePreview(
+          input,
+          compressedBase64
+        );
+
+        if (
+          key ===
+          'gambar_utama'
+        ) {
+
+          document
+            .getElementById(
+              'gambar_utama_error'
+            )
+            .style.display =
+            'none';
+
         }
-        showToast('Gambar siap dikirim.', 'success');
-      };
-      reader.readAsDataURL(file);
+
+        showToast(
+          'Gambar berhasil dikompres (~300KB)',
+          'success'
+        );
+
+      } catch (err) {
+
+        console.error(err);
+
+        showToast(
+          'Gagal memproses gambar',
+          'error'
+        );
+
+      }
+
     }
 
     function getFacilities() {
@@ -822,7 +1012,7 @@
 
       // Validasi gambar utama
       const gambarUtamaError = document.getElementById('gambar_utama_error');
-      if (!imageFiles.gambar_utama) {
+      if (!uploadedImages.gambar_utama) {
         gambarUtamaError.style.display = 'block';
         valid = false;
       } else {
@@ -843,28 +1033,60 @@
 
       try {
         // Build FormData dengan semua field
-        const formData = new FormData();
-        
-        // Tambahkan action
-        formData.append('action', 'saveRentProperty');
-        
-        // Tambahkan semua field text
-        const formElements = FORM.querySelectorAll('input:not([type="file"]), select, textarea');
+        const formData = new URLSearchParams();
+
+        formData.append(
+          'action',
+          'saveRentProperty'
+        );
+
+        const formElements =
+          FORM.querySelectorAll(
+            'input:not([type="file"]), select, textarea'
+          );
+
         formElements.forEach(el => {
+
           if (el.name) {
-            formData.append(el.name, el.value);
+
+            formData.append(
+              el.name,
+              el.value
+            );
+
           }
+
         });
-        
-        // Tambahkan fasilitas
-        formData.append('fasilitas', getFacilities());
-        
-        // Tambahkan gambar sebagai file
-        for (const [key, file] of Object.entries(imageFiles)) {
-          if (file) {
-            formData.append(key, file);
-          }
-        }
+
+        formData.append(
+          'fasilitas',
+          getFacilities()
+        );
+
+        formData.append(
+          'gambar_utama',
+          uploadedImages.gambar_utama || ''
+        );
+
+        formData.append(
+          'gambar2',
+          uploadedImages.gambar2 || ''
+        );
+
+        formData.append(
+          'gambar3',
+          uploadedImages.gambar3 || ''
+        );
+
+        formData.append(
+          'gambar4',
+          uploadedImages.gambar4 || ''
+        );
+
+        formData.append(
+          'gambar5',
+          uploadedImages.gambar5 || ''
+        );
 
         // Kirim data
         const response = await fetch(SCRIPT_URL, {
@@ -892,8 +1114,8 @@
 
     function resetForm() {
       FORM.reset();
-      Object.keys(imageFiles).forEach(key => {
-        imageFiles[key] = null;
+      Object.keys(uploadedImages).forEach(key => {
+        uploadedImages[key] = null;
       });
       
       // Reset preview gambar
