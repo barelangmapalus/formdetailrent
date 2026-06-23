@@ -587,7 +587,15 @@
     }
 
     function renderCard(property) {
-      const image = text(property.gambar_utama, FALLBACK_IMAGE);
+        const fileId =
+        (property.gambar_utama || '')
+            .split('id=')[1];
+
+        const image =
+        fileId
+            ? `https://lh3.googleusercontent.com/d/${fileId}`
+            : FALLBACK_IMAGE;
+            
       const title = text(property.nama_property, 'Properti tanpa nama');
       const status = text(property.status, 'active');
       const contact = phoneHref(property.kontak || property.sales_phone);
@@ -619,20 +627,36 @@
             </div>
 
             <div class="actions">
-              ${contact ? `
-                <a class="btn" href="https://wa.me/${contact}" target="_blank" rel="noopener">
-                  <i class="fab fa-whatsapp"></i> Hubungi Host
+            ${contact ? `
+                <a
+                class="btn"
+                href="https://wa.me/${contact}"
+                target="_blank"
+                rel="noopener"
+                >
+                <i class="fab fa-whatsapp"></i>
+                Hubungi Host
                 </a>
-              ` : `
-                <button class="btn" type="button" disabled>
-                  <i class="fas fa-phone"></i> Kontak Kosong
+            ` : `
+                <button
+                class="btn"
+                type="button"
+                disabled
+                >
+                <i class="fas fa-phone"></i>
+                Kontak Kosong
                 </button>
-              `}
-              <button class="btn secondary" type="button" title="${escapeHtml(text(property.property_id, 'Tanpa ID'))}">
-                <i class="fas fa-id-card"></i>
-              </button>
+            `}
+
+            <a
+                class="btn secondary"
+                href="detail_rent.html?id=${property.property_id}"
+            >
+                <i class="fas fa-eye"></i>
+                Detail
+            </a>
+
             </div>
-          </div>
         </article>
       `;
     }
